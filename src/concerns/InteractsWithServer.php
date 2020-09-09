@@ -28,14 +28,6 @@ trait InteractsWithServer
      */
     public function run(): void
     {
-        $this->getServer()->set([
-            'task_enable_coroutine' => true,
-            'send_yield'            => true,
-            'reload_async'          => true,
-            'enable_coroutine'      => true,
-            'max_request'           => 0,
-            'task_max_request'      => 0,
-        ]);
         $this->initialize();
         $this->triggerEvent('init');
 

@@ -169,7 +169,7 @@ class Pusher
      */
     protected function shouldPushToDescriptor(int $fd): bool
     {
-        if (!$this->server->exist($fd)) {
+        if (!$this->server->isEstablished($fd)) {
             return false;
         }
 

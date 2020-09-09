@@ -22,6 +22,12 @@ return [
             'package_max_length'    => 20 * 1024 * 1024,
             'buffer_output_size'    => 10 * 1024 * 1024,
             'socket_buffer_size'    => 128 * 1024 * 1024,
+            'task_enable_coroutine' => true,
+            'send_yield'            => true,
+            'reload_async'          => true,
+            'enable_coroutine'      => true,
+            'task_max_request'      => 1000,
+            'max_request'           => 1000,
         ],
     ],
     'websocket'  => [

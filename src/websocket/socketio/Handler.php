@@ -26,25 +26,26 @@ class Handler implements HandlerInterface
     /**
      * "onOpen" listener.
      *
-     * @param int     $fd
+     * @param int $fd
      * @param Request $request
      */
     public function onOpen($fd, Request $request)
     {
         if (!$request->param('sid')) {
-            $payload        = json_encode(
+            $payload = json_encode(
                 [
-                    'sid'          => base64_encode(uniqid()),
-                    'upgrades'     => [],
+                    'sid' => base64_encode(uniqid()),
+                    'upgrades' => [],
                     'pingInterval' => $this->config->get('swoole.websocket.ping_interval'),
-                    'pingTimeout'  => $this->config->get('swoole.websocket.ping_timeout'),
+                    'pingTimeout' => $this->config->get('swoole.websocket.ping_timeout'),
                 ]
             );
-            $initPayload    = Packet::OPEN . $payload;
+            $initPayload = Packet::OPEN . $payload;
             $connectPayload = Packet::MESSAGE . Packet::CONNECT;
-
-            $this->server->push($fd, $initPayload);
-            $this->server->push($fd, $connectPayload);
+            if ($this->server->isEstablished($fd)) {
+                $this->server->push($fd, $initPayload);
+                $this->server->push($fd, $connectPayload);
+            }
         }
     }
 
@@ -81,7 +82,7 @@ class Handler implements HandlerInterface
     protected function checkHeartbeat($fd, $packet)
     {
         $packetLength = strlen($packet);
-        $payload      = '';
+        $payload = '';
 
         if ($isPing = Packet::isSocketType($packet, 'ping')) {
             $payload .= Packet::PONG;
@@ -91,7 +92,7 @@ class Handler implements HandlerInterface
             $payload .= substr($packet, 1, $packetLength - 1);
         }
 
-        if ($isPing) {
+        if ($isPing && $this->server->isEstablished($fd)) {
             $this->server->push($fd, $payload);
         }
     }
